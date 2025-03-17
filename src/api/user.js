@@ -31,18 +31,29 @@ export const loginServe = ({ username, password, role }) =>
   request.post(`/login/${role}`, { username, password })
 
 // 医生放号接口
-export const addAppointmentServe = ({
-  appointmentDate,
-  appointmentTimeSlot,
-  appointmentNumber
-}) => {
+export const appointmentSlot = ({ session, remainingCount }) => {
   console.log(localStorage.getItem('token'))
-  return request.post('/doctor/saveAppointment', {
-    appointmentDate,
-    appointmentTimeSlot,
-    appointmentNumber
-  })
+  // 检查 session 是否为合法值
+  if (session !== '上午' && session !== '下午') {
+    return Promise.reject(new Error('预约时间只能是上午或者下午'))
+  }
+  // 检查 remainingCount 是否为非负数
+  if (remainingCount < 0) {
+    return Promise.reject(new Error('放号数不能为负数'))
+  }
+  // 发送 POST 请求（移除 headers 参数）
+  return request
+    .post('/appointmentSlot', {
+      session,
+      remainingCount
+    })
+    .then((response) => response.data)
+    .catch((error) => {
+      console.error('请求出错:', error)
+      throw error
+    })
 }
+
 // 医生回显放号（分页）
 export const doctorGetAppointmentListServe = ({ size, current }) => {
   if (size) {

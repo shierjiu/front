@@ -1,6 +1,6 @@
 <script setup>
 import { ref, onMounted, computed } from 'vue'
-import { doctorStartDiagnoseServe, doctorEndDiagnoseServe, addAppointmentServe, getDepartmentListServe, doctorGetAppointmentListServe } from '@/api/user'
+import { appointmentSlot, doctorStartDiagnoseServe, doctorEndDiagnoseServe, getDepartmentListServe, doctorGetAppointmentListServe } from '@/api/user'
 import { ElMessage } from 'element-plus';
 // 医生获取预约列表
 onMounted(() => {
@@ -39,39 +39,36 @@ const departmentList = ref([
 // 新增挂号
 const dialogAdd = ref(false)
 const addForm = ref()
-const addModel = ref({
-  appointmentDate: '',
-  appointmentTimeSlot: '',
-  appointmentNumber: ''
-})
+const addModel = ref({ session: '', remainingCount: '' })
 const addRules = {
-  appointmentDate: [
-    { required: true, message: '请选择日期', trigger: 'blur' }
+  session: [
+    { required: true, message: '请选择时间段', trigger: 'change' }
   ],
-  appointmentTimeSlot: [
-    { required: true, message: '请选择时间段', trigger: 'blur' }
-  ],
-  appointmentNumber: [
-    { required: true, message: '请输入放号量', trigger: 'blur' }
+  remainingCount: [
+    { required: true, message: '请输入放号量', trigger: 'blur' },
+    { validator: (rule, value) => value >= 0, message: '放号数不能为负数', trigger: 'blur' }
   ]
 }
 const addRegistration = () => {
   dialogAdd.value = true
 }
 
+// 在提交时自动生成session
 const subAdd = async () => {
-  await addForm.value.validate()
-  await addAppointmentServe(addModel.value)
-  ElMessage.success('新增成功！')
-  dialogAdd.value = false
+  try {
+    await addForm.value.validate()
+    await appointmentSlot(addModel.value)
+    ElMessage.success('新增成功！')
+    dialogAdd.value = false
+    addModel.value = { session: '', remainingCount: '' }
+  } catch (error) {
+    ElMessage.error(error.message)
+  }
 }
 
 const dialogAddClose = () => {
-  addModel.value.appointmentDate = ''
-  addModel.value.appointmentTimeSlot = ''
-  addModel.value.appointmentNumber = ''
+  addModel.value = { session: '', remainingCount: '' }
 }
-
 // 开始就诊
 const dialogStart = ref(false)
 const startForm = ref()
@@ -140,14 +137,6 @@ const dialogEndClose = () => {
   endModel.value.medicalHistory = ''
 }
 
-// 根据日期拿到时间段
-const getPeriod = (date) => {
-  const hours = Number(date.substring(11, 13))
-  if (hours < 12) {
-    return '上午'
-  }
-  return '下午'
-}
 
 // 获取科室id拿到科室名
 const idToName = computed(() => {
@@ -209,19 +198,14 @@ const onCurrentChange = async () => {
     <el-dialog @close="dialogAddClose" width="25%" v-model="dialogAdd">
       <div class="dia-contain">
         <el-form label-width="90px" ref="addForm" :model="addModel" :rules="addRules">
-          <el-form-item label="日期：" prop="appointmentDate">
-            <el-date-picker v-model="addModel.appointmentDate" placeholder="请选择时间" type="datetime"
-              format="YYYY-MM-DD hh:mm:ss" value-format="YYYY-MM-DD hh:mm:ss"
-              @change="addModel.appointmentTimeSlot = getPeriod(addModel.appointmentDate)" />
-          </el-form-item>
-          <el-form-item label="时间段：" prop="appointmentTimeSlot">
-            <el-select v-model="addModel.appointmentTimeSlot" placeholder="请选择时间段">
+          <el-form-item label="时间段：" prop="session">
+            <el-select v-model="addModel.session" placeholder="请选择时间段">
               <el-option label="上午" value="上午"></el-option>
               <el-option label="下午" value="下午"></el-option>
             </el-select>
           </el-form-item>
-          <el-form-item label="放号量：" prop="appointmentNumber">
-            <el-input placeholder="请输入放号量" v-model="addModel.appointmentNumber"></el-input>
+          <el-form-item label="放号量：" prop="remainingCount">
+            <el-input placeholder="请输入放号量" v-model.number="addModel.remainingCount"></el-input>
           </el-form-item>
           <el-form-item>
             <el-button @click="subAdd" type="primary">新增</el-button>
