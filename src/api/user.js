@@ -102,17 +102,11 @@ export const cancelAppointmentServe = () => request.put('/user/updatePurchase')
 export const doctorStartDiagnoseServe = (contractAddress) =>
   request.get('/doctor/purchaseUser', { contractAddress })
 
-// 医生结束就诊（添加病例）
-export const doctorEndDiagnoseServe = ({
-  userAddress,
-  patientInfo,
-  immediateCase,
-  medicalHistory
-}) => {
-  return request.post('/doctor/endOfVisit', {
-    userAddress,
-    patientInfo,
-    immediateCase,
-    medicalHistory
+// 医生更新就诊
+export const updateAppointmentSlot = ({ slotId, session, remainingCount }) => {
+  return request.put('/appointmentSlot', {
+    slotId,
+    session,
+    remainingCount
   })
 }

@@ -1,11 +1,11 @@
 <script setup>
 import { ref, onMounted } from 'vue'
-import { appointmentSlot, doctorStartDiagnoseServe, doctorEndDiagnoseServe, getDepartmentListServe, doctorGetAppointmentListServe } from '@/api/user'
+import { appointmentSlot, updateAppointmentSlot, doctorGetAppointmentListServe } from '@/api/user'
 import { ElMessage } from 'element-plus';
 // 医生获取预约列表
 onMounted(() => {
   getAppointmentList()
-  getDepartmentList()
+
 })
 const getAppointmentList = async () => {
   const res = await doctorGetAppointmentListServe(pagination.value);
@@ -21,20 +21,10 @@ const getAppointmentList = async () => {
 }
 
 
-const getDepartmentList = async () => {
-  const res = await getDepartmentListServe()
-  departmentList.value = res.data.data
-}
 
 // 展示列表数据
 const tableData = ref([])
 
-const departmentList = ref([
-  {
-    id: 5,
-    departmentName: "内科"
-  }
-])
 
 // 新增挂号
 const dialogAdd = ref(false)
@@ -69,71 +59,55 @@ const subAdd = async () => {
 const dialogAddClose = () => {
   addModel.value = { session: '', remainingCount: '' }
 }
-// 开始就诊
-const dialogStart = ref(false)
-const startForm = ref()
-const startModel = ref({
-  id: '',
-  contractAddress: ''
-})
-const startRules = {
-  contractAddress: [
-    { required: true, message: '请输入患者地址', trigger: 'blur' }
+// 更新对话框显示状态
+const dialogUpdate = ref(false);
+// 更新表单引用
+const updateForm = ref();
+// 更新表单数据模型
+const updateModel = ref({
+  slotId: 0,
+  session: '',
+  remainingCount: 0
+});
+// 更新表单验证规则
+const updateRules = {
+  session: [
+    { required: true, message: '请选择时间段', trigger: 'change' }
+  ],
+  remainingCount: [
+    { required: true, message: '请输入放号量', trigger: 'blur' },
+    { type: 'number', message: '请输入有效数字', trigger: 'blur' },
+    { validator: (rule, value) => value >= 0, message: '放号数不能为负数', trigger: 'blur' }
   ]
-}
-const startDiagnose = (id) => {
-  startModel.value.id = id
-  dialogStart.value = true
-}
-const subStart = async () => {
-  await startForm.value.validate()
-  await doctorStartDiagnoseServe()
-  ElMessage.success('开始就诊')
-  dialogStart.value = false
-}
-
-const dialogStartClose = () => {
-  startModel.value.contractAddress = ''
-}
-
-// 结束就诊
-const dialogEnd = ref(false)
-const endForm = ref()
-const endModel = ref({
-  userAddress: '',
-  patientInfo: '',
-  immediateCase: '',
-  medicalHistory: ''
-})
-const endRules = {
-  userAddress: [
-    { required: true, message: '请输入患者地址', trigger: 'blur' }
-  ],
-  patientInfo: [
-    { required: true, message: '请输入患者信息', trigger: 'blur' }
-  ],
-  immediateCase: [
-    { required: true, message: '请输入既往病史', trigger: 'blur' }
-  ],
-  medicalHistory: [
-    { required: true, message: '请输入既病史', trigger: 'blur' }
-  ]
-}
-
-const subEnd = async () => {
-  await endForm.value.validate()
-  await doctorEndDiagnoseServe(endModel.value)
-  ElMessage.success('问诊结束！')
-  dialogEnd.value = false
-}
-
-const dialogEndClose = () => {
-  endModel.value.userAddress = ''
-  endModel.value.patientInfo = ''
-  endModel.value.immediateCase = ''
-  endModel.value.medicalHistory = ''
-}
-
+};
+const updateRegistration = async (row) => {
+  // 直接赋值并显示更新对话框
+  updateModel.value = {
+    slotId: row.slotId,
+    session: row.session,
+    remainingCount: row.remainingCount
+  };
+  dialogUpdate.value = true;
+};
+const subUpdate = async () => {
+  try {
+    // 验证更新表单
+    await updateForm.value.validate();
+    // 调用更新接口
+    await updateAppointmentSlot(updateModel.value);
+    ElMessage.success('更新成功！');
+    // 关闭更新对话框
+    dialogUpdate.value = false;
+    // 重新获取预约列表
+    await getAppointmentList();
+  } catch (error) {
+    ElMessage.error(error.message);
+  }
+};
+const dialogUpdateClose = () => {
+  // 重置更新表单数据
+  updateModel.value = { slotId: 0, session: '', remainingCount: 0 };
+};
 
 // 分页模块
 const total = ref(0)
@@ -166,7 +140,8 @@ const onCurrentChange = async (newCurrent) => {
       <el-table-column label="剩余号源" prop="remainingCount"></el-table-column>
       <el-table-column label="操作" width="200px">
         <template #default="{ row }">
-          <el-button @click="startDiagnose(row.slotId)" type="primary">更新</el-button>
+          <!-- 修改按钮点击事件 -->
+          <el-button @click="updateRegistration(row)" type="primary">更新</el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -174,6 +149,7 @@ const onCurrentChange = async (newCurrent) => {
     <el-pagination v-model:current-page="pagination.current" v-model:page-size="pagination.size" :total="total"
       :page-sizes="[5, 10, 15]" layout="total, sizes, prev, pager, next, jumper" @size-change="onSizeChange"
       @current-change="onCurrentChange" />
+
     <el-dialog @close="dialogAddClose" width="25%" v-model="dialogAdd">
       <div class="dia-contain">
         <el-form label-width="90px" ref="addForm" :model="addModel" :rules="addRules">
@@ -193,54 +169,21 @@ const onCurrentChange = async (newCurrent) => {
         </el-form>
       </div>
     </el-dialog>
-    <el-dialog @close="dialogStartClose" width="25%" v-model="dialogStart">
-      <div class="dia-contain">
-        <el-form label-width="100px" ref="startForm" :model="startModel" :rules="startRules">
-          <el-form-item label="id:" prop="id">
-            <el-input disabled v-model="startModel.id"></el-input>
-          </el-form-item>
-          <el-form-item label="患者地址" prop="contractAddress">
-            <el-input v-model="startModel.contractAddress" placeholder="请输入患者地址"></el-input>
-          </el-form-item>
-          <el-form-item>
-            <el-button @click="subStart" type="primary">开始就诊</el-button>
-            <el-button @click="dialogStart = false" type="primary">取消</el-button>
-          </el-form-item>
-        </el-form>
-      </div>
-    </el-dialog>
-    <el-dialog @close="dialogEndClose" width="47%" v-model="dialogEnd">
-      <h1>结束就诊</h1>
-      <el-form ref="endForm" :model="endModel" :rules="endRules" inline>
-        <el-form-item label="医生:">
-          <el-input disabled class="mar-ri" style="width: 150px" v-model="tableData.name"
-            placeholder="请输入医生"></el-input>
+
+    <el-dialog @close="dialogUpdateClose" width="25%" v-model="dialogUpdate" title="更新挂号信息">
+      <el-form label-width="90px" ref="updateForm" :model="updateModel" :rules="updateRules">
+        <el-form-item label="时间段：" prop="session">
+          <el-select v-model="updateModel.session" placeholder="请选择时间段">
+            <el-option label="上午" value="上午"></el-option>
+            <el-option label="下午" value="下午"></el-option>
+          </el-select>
         </el-form-item>
-        <el-form-item label="医生地址:">
-          <el-input disabled style="width: 550px" v-model="tableData.contractAddress" placeholder="请输入医生地址"></el-input>
-        </el-form-item>
-        <br>
-        <el-form-item label="患者地址:" prop="userAddress">
-          <el-input style="width: 550px" v-model="endModel.userAddress" placeholder="请输入患者地址"></el-input>
-        </el-form-item>
-        <p>患者信息管理：</p>
-        <el-form-item label="&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp" prop="patientInfo">
-          <el-input type="textarea" :input-style="{ width: '84vh', height: '90px' }"
-            v-model="endModel.patientInfo"></el-input>
-        </el-form-item>
-        <p>既往病史：</p>
-        <el-form-item label="&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp" prop="medicalHistory">
-          <el-input type="textarea" :input-style="{ width: '84vh', height: '90px' }"
-            v-model="endModel.medicalHistory"></el-input>
-        </el-form-item>
-        <p>现病史：</p>
-        <el-form-item label="&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp" prop="immediateCace">
-          <el-input type="textarea" :input-style="{ width: '84vh', height: '90px' }"
-            v-model="endModel.immediateCace"></el-input>
+        <el-form-item label="放号量：" prop="remainingCount">
+          <el-input placeholder="请输入放号量" v-model.number="updateModel.remainingCount"></el-input>
         </el-form-item>
         <el-form-item>
-          <el-button @click="subEnd" style="margin-left: 690px" type="primary">结束就诊</el-button>
-          <el-button class="right" @click="dialogEnd = false" type="primary">取消</el-button>
+          <el-button @click="subUpdate" type="primary">保存</el-button>
+          <el-button @click="dialogUpdate = false" type="primary">取消</el-button>
         </el-form-item>
       </el-form>
     </el-dialog>
