@@ -1,5 +1,5 @@
 <script setup>
-import { ref, onMounted, computed } from 'vue'
+import { ref, onMounted } from 'vue'
 import { appointmentSlot, doctorStartDiagnoseServe, doctorEndDiagnoseServe, getDepartmentListServe, doctorGetAppointmentListServe } from '@/api/user'
 import { ElMessage } from 'element-plus';
 // 医生获取预约列表
@@ -8,11 +8,18 @@ onMounted(() => {
   getDepartmentList()
 })
 const getAppointmentList = async () => {
-  const res = await doctorGetAppointmentListServe(pagination.value)
-  console.log(res.data)
-  tableData.value = res.data.data.records[0]
-  total.value = res.data.data.total
+  const res = await doctorGetAppointmentListServe(pagination.value);
+  console.log("API 响应数据:", res); // 先打印整个 res，看看结构
+  if (res.data.code === 1) {
+    tableData.value = [res.data.data];
+    total.value = tableData.value.length;
+    console.log('获取到的预约列表:', tableData.value);
+    console.log('总数:', total.value);
+  } else {
+    ElMessage.error(res.msg || '获取数据失败');
+  }
 }
+
 
 const getDepartmentList = async () => {
   const res = await getDepartmentListServe()
@@ -20,15 +27,8 @@ const getDepartmentList = async () => {
 }
 
 // 展示列表数据
-const tableData = ref(
-  {
-    id: 1,
-    departmentId: 5,
-    list: [{
-      appointmentDate: '2024-12-12 13:00:00'
-    }]
-  }
-)
+const tableData = ref([])
+
 const departmentList = ref([
   {
     id: 5,
@@ -119,9 +119,6 @@ const endRules = {
     { required: true, message: '请输入既病史', trigger: 'blur' }
   ]
 }
-const endDiagnose = () => {
-  dialogEnd.value = true
-}
 
 const subEnd = async () => {
   await endForm.value.validate()
@@ -138,33 +135,20 @@ const dialogEndClose = () => {
 }
 
 
-// 获取科室id拿到科室名
-const idToName = computed(() => {
-  const id = tableData.value.departmentId
-  let department = ''
-  departmentList.value.forEach(item => {
-    if (item.id == id) {
-      department = item.departmentName
-    }
-  })
-  return department
-})
-
 // 分页模块
-const total = ref(1)
+const total = ref(0)
 const pagination = ref({
   current: 1,
   size: 5
 })
-const onsizeChange = async () => {
-  const res = doctorGetAppointmentListServe(pagination.value)
-  tableData.value = res.data.data.records[0]
-  total.value = res.data.data.total
+// 分页处理
+const onSizeChange = async (newSize) => {
+  pagination.value.size = newSize;
+  await getAppointmentList();
 }
-const onCurrentChange = async () => {
-  const res = doctorGetAppointmentListServe(pagination.value)
-  tableData.value = res.data.data.records[0]
-  total.value = res.data.data.total
+const onCurrentChange = async (newCurrent) => {
+  pagination.value.current = newCurrent;
+  await getAppointmentList();
 }
 </script>
 
@@ -173,28 +157,23 @@ const onCurrentChange = async () => {
     <template #header>
       <el-button @click="addRegistration" type="primary">新增挂号</el-button>
     </template>
-    <el-table :data="tableData.list">
-      <el-table-column label="id">{{ tableData.id }}</el-table-column>
-      <el-table-column label="姓名">{{ tableData.name }}</el-table-column>
-      <el-table-column label="部门">{{ idToName }}</el-table-column>
-      <el-table-column label="医生地址">{{ tableData.contractAddress }}</el-table-column>
-      <el-table-column label="日期" prop="appointmentDate"></el-table-column>
-      <el-table-column label="时间段" prop="appointmentDate">
+
+    <el-table :data="tableData" stripe>
+      <el-table-column label="ID" prop="slotId"></el-table-column>
+      <el-table-column label="医生姓名" prop="doctorName"></el-table-column>
+      <el-table-column label="日期" prop="createDate"></el-table-column>
+      <el-table-column label="时间段" prop="session"></el-table-column>
+      <el-table-column label="剩余号源" prop="remainingCount"></el-table-column>
+      <el-table-column label="操作" width="200px">
         <template #default="{ row }">
-          {{ getPeriod(row.appointmentDate) }}
-        </template>
-      </el-table-column>
-      <el-table-column label="放号量" prop="appointmentNumber"></el-table-column>
-      <el-table-column width="250px" label="操作">
-        <template #default="{ row }">
-          <el-button @click="startDiagnose(row.id)" type="primary">开始就诊</el-button>
-          <el-button @click="endDiagnose" type="danger">结束就诊</el-button>
+          <el-button @click="startDiagnose(row.slotId)" type="primary">更新</el-button>
         </template>
       </el-table-column>
     </el-table>
+
     <el-pagination v-model:current-page="pagination.current" v-model:page-size="pagination.size" :total="total"
-      :background="true" :page-sizes="[5, 6, 7]" layout="total, sizes, prev, pager, next, jumper"
-      @size-change="onsizeChange" @current-change="onCurrentChange" />
+      :page-sizes="[5, 10, 15]" layout="total, sizes, prev, pager, next, jumper" @size-change="onSizeChange"
+      @current-change="onCurrentChange" />
     <el-dialog @close="dialogAddClose" width="25%" v-model="dialogAdd">
       <div class="dia-contain">
         <el-form label-width="90px" ref="addForm" :model="addModel" :rules="addRules">
@@ -241,9 +220,6 @@ const onCurrentChange = async () => {
           <el-input disabled style="width: 550px" v-model="tableData.contractAddress" placeholder="请输入医生地址"></el-input>
         </el-form-item>
         <br>
-        <el-form-item label="科室:">
-          <el-input disabled class="mar-ri" style="width: 150px" v-model="idToName"></el-input>
-        </el-form-item>
         <el-form-item label="患者地址:" prop="userAddress">
           <el-input style="width: 550px" v-model="endModel.userAddress" placeholder="请输入患者地址"></el-input>
         </el-form-item>

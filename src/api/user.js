@@ -56,10 +56,11 @@ export const appointmentSlot = ({ session, remainingCount }) => {
 
 // 医生回显放号（分页）
 export const doctorGetAppointmentListServe = ({ size, current }) => {
-  if (size) {
-    return request.get('/doctor/list')
+  let url = '/appointmentSlot'
+  if (size && current) {
+    url += `?size=${size}&current=${current}`
   }
-  return request.get(`/doctor/list?size=${size}&current=${current}`)
+  return request.get(url)
 }
 
 // 获取医生列表
