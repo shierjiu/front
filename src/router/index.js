@@ -24,6 +24,10 @@ const router = createRouter({
         {
           path: '/doctor/addnum',
           component: () => import('@/views/doctor/AddNumber.vue') // 修正子路由导入语法
+        },
+        {
+          path: '/doctor/patientsee',
+          component: () => import('@/views/doctor/PatientSee.vue') // 修正子路由导入语法
         }
       ]
     }

@@ -110,3 +110,7 @@ export const updateAppointmentSlot = ({ slotId, session, remainingCount }) => {
     remainingCount
   })
 }
+// 医生查看患者
+export const getConsultation = (params) => {
+  return request.get('/consultation', { params })
+}

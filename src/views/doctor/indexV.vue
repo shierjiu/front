@@ -25,6 +25,7 @@ const logout = async () => {
       <el-aside>
         <el-menu router :default-active="$route.path">
           <el-menu-item index="/doctor/addnum">新增挂号</el-menu-item>
+          <el-menu-item index="/doctor/patientsee">患者就诊</el-menu-item>
         </el-menu>
       </el-aside>
       <el-main>
