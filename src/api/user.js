@@ -145,6 +145,11 @@ export const getConsultation = (params) => {
   return request.get('/consultation', { params })
 }
 
+// 获取预约时段信息接口
+export const getAppointmentSlotInfo = () => {
+  return request.get('/appointmentSlot')
+}
+
 // 获取部门列表接口
 export const getDepartmentList = () => {
   return request.get('/department/departmentList')

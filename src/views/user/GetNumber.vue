@@ -1,7 +1,7 @@
 <script setup>
 import { ref, onMounted } from 'vue'
 import DoctorCard from './components/DoctorCard.vue'
-import { getDoctorListServe, getDepartmentList } from '@/api/user'
+import { getDoctorListServe, getDepartmentList, getAppointmentSlotInfo } from '@/api/user'
 import { ElMessage } from 'element-plus';
 
 // 获取医生列表
@@ -22,10 +22,12 @@ onMounted(async () => {
     console.error('网络请求失败', error)
   };
   fetchDepartmentList();
+  fetchAppointmentSlot();
 })
 
 const department = ref('')// 科室
 const departmentList = ref([]);// 科室列表
+const appointmentSlot = ref(null);// 预约时段
 
 const doctorList = ref([
   {
@@ -93,7 +95,20 @@ const search = async () => {
   }
 };
 
-
+// 获取预约时段信息(放号信息)
+const fetchAppointmentSlot = async () => {
+  try {
+    const response = await getAppointmentSlotInfo();
+    console.log('预约时段信息', response.data);
+    if (response.data.code === 1) {
+      appointmentSlot.value = response.data.data;
+    } else {
+      ElMessage.error(response.data.msg || '获取预约时段信息失败');
+    }
+  } catch (error) {
+    ElMessage.error('请求出错，请稍后重试');
+  }
+};
 
 </script>
 
