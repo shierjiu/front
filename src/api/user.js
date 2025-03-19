@@ -93,7 +93,9 @@ export const registrationServe = ({
 export const getCaseServe = () => request.get('/user/userInfo')
 
 // 患者获取我的预约
-export const getMyAppointmentServe = () => request.get('/user/purchase')
+export const addAppointment = (slotId) => {
+  return request.post('/appointment', { slotId })
+}
 
 // 患者取消预约
 export const cancelAppointmentServe = () => request.put('/user/updatePurchase')

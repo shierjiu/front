@@ -1,6 +1,6 @@
 <script setup>
 import { defineProps, ref, defineEmits } from 'vue'
-import { registrationServe } from '@/api/user'
+import { addAppointment } from '@/api/user'
 import { ElMessage } from 'element-plus'
 
 const props = defineProps({
@@ -11,25 +11,30 @@ const props = defineProps({
 })
 
 const emit = defineEmits(['getData'])
-
+const slotId = ref(props.doctorInfo.slotId || '')
 // 是否已预约
+console.log('props.doctorInfo', props.doctorInfo);
 const appointmented = ref(false)
 
-// 点击“预约挂号”
-const registration = async () => {
-  try {
-    // 将医生信息传给后端
-    await registrationServe(props.doctorInfo)
-    ElMessage.success('预约成功！')
-
-    appointmented.value = true
-    // 通知父组件刷新数据或做其他逻辑
-    emit('getData')
-  } catch (err) {
-    ElMessage.error('预约失败，请稍后重试')
-    console.error(err)
+const handleAddAppointment = async () => {
+  //console.log('点击触发，slotId:', slotId.value, 'appointed:', appointmented.value);
+  if (!slotId.value) {
+    ElMessage.warning('请确认预约时段信息');
+    return;
   }
-}
+  try {
+    const response = await addAppointment(slotId.value);
+    if (response.data.code === 1) {
+      ElMessage.success('预约添加成功');
+      appointmented.value = true; // 更新预约状态
+      emit('getData'); // 通知父组件刷新数据
+    } else {
+      ElMessage.error(response.data.msg || '预约添加失败');
+    }
+  } catch (error) {
+    ElMessage.error('请求出错，请检查网络或联系管理员');
+  }
+};
 </script>
 
 <template>
@@ -45,7 +50,7 @@ const registration = async () => {
       <p>{{ doctorInfo.session }}</p>
     </div>
     <span>剩余数量：{{ doctorInfo.remainingCount }}</span>
-    <el-button :disabled="appointmented" @click="registration" type="primary">
+    <el-button :disabled="appointmented" @click="handleAddAppointment" type="primary">
       {{ appointmented ? '已预约' : '预约挂号' }}
     </el-button>
   </div>

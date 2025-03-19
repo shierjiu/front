@@ -58,7 +58,8 @@ const search = async () => {
           session: firstSlot.session,
           remainingCount: firstSlot.remainingCount,
           // 这里仅示例，如需医生照片，请改成真实路径或后端返回的 URL
-          photoUrl: '@/assets/doctor.jpg'
+          photoUrl: '@/assets/doctor.jpg',
+          slotId: firstSlot.slotId
         }
       })
       ElMessage.success('搜索成功')
@@ -91,7 +92,6 @@ const search = async () => {
 
     <div class="doctor">
       <DoctorCard v-for="doctor in doctorList" :key="doctor.doctorId" :doctor-info="doctor" />
-
     </div>
   </el-card>
 </template>
