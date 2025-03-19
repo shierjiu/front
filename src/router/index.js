@@ -13,7 +13,11 @@ const router = createRouter({
         { path: '/user/getnum', component: () => import('@/views/user/GetNumber.vue') },
         { path: '/user/appointment', component: () => import('@/views/user/MyAppointment.vue') },
         { path: '/user/case', component: () => import('@/views/user/MyCase.vue') },
-        { path: '/user/my-test', component: () => import('@/views/user/myTest.vue') } // 新增子路由
+        { path: '/user/my-test', component: () => import('@/views/user/myTest.vue') }, // 新增子路由
+        {
+          path: '/user/personalinformation',
+          component: () => import('@/views/user/PersonalInformation.vue')
+        } // 新增子路由
       ]
     },
     {

@@ -1,5 +1,6 @@
 <template>
     <el-card>
+        <el-button @click="handleButtonClick">开始问诊</el-button>
         <!-- 有数据时遍历渲染 -->
         <div v-if="consultationList.length > 0">
             <div v-for="item in consultationList" :key="item.appointmentId" class="consultation-item">
@@ -36,6 +37,9 @@ const fetchConsultation = async () => {
     }
 };
 
+const handleButtonClick = () => {
+    console.log('开始问诊');
+};
 onMounted(() => {
     fetchConsultation();
 });

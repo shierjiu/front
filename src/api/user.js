@@ -98,6 +98,11 @@ export const getMyAppointmentServe = () => request.get('/user/purchase')
 // 患者取消预约
 export const cancelAppointmentServe = () => request.put('/user/updatePurchase')
 
+//患者回显个人信息
+export const getUserInfo = (userId) => {
+  return request.get(`/user/${userId}`)
+}
+
 // 医生开始就诊患者
 export const doctorStartDiagnoseServe = (contractAddress) =>
   request.get('/doctor/purchaseUser', { contractAddress })
