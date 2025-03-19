@@ -97,8 +97,15 @@ export const addAppointment = (slotId) => {
   return request.post('/appointment', { slotId })
 }
 
+// 患者获取我的预约
+export const getMyAppointmentServe = () => request.get('/appointment')
+
 // 患者取消预约
-export const cancelAppointmentServe = () => request.put('/user/updatePurchase')
+export const updateAppointmentStatus = (appointmentId) => {
+  return request.put('/appointment', {
+    appointmentId
+  })
+}
 
 //患者回显个人信息
 export const getUserInfo = (userId) => {
