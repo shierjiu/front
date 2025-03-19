@@ -127,6 +127,12 @@ export const changeInfoUser = ({
     createdDate
   })
 }
+// 患者获取预约时段列表接口（按科室名称查询）
+export const getAppointmentSlotListByDeptName = (departmentName) => {
+  return request.get('/appointmentSlot/appointmentslotList', {
+    params: { departmentName } // 参数是一个字符串
+  })
+}
 
 // 医生开始就诊患者
 export const doctorStartDiagnoseServe = (contractAddress) =>
@@ -150,7 +156,7 @@ export const getAppointmentSlotInfo = () => {
   return request.get('/appointmentSlot')
 }
 
-// 获取部门列表接口
+//医生获取部门列表接口
 export const getDepartmentList = () => {
   return request.get('/department/departmentList')
 }
