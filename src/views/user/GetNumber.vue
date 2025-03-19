@@ -1,7 +1,7 @@
 <script setup>
 import { ref, onMounted } from 'vue'
 import DoctorCard from './components/DoctorCard.vue'
-import { getDoctorListServe } from '@/api/user'
+import { getDoctorListServe, getDepartmentList } from '@/api/user'
 import { ElMessage } from 'element-plus';
 
 // 获取医生列表
@@ -20,12 +20,12 @@ onMounted(async () => {
     }
   } catch (error) {
     console.error('网络请求失败', error)
-  }
-
+  };
+  fetchDepartmentList();
 })
 
 const department = ref('')// 科室
-const departmentList = ref(['神经科', '内科'])// 科室列表
+const departmentList = ref([]);// 科室列表
 
 const doctorList = ref([
   {
@@ -53,25 +53,48 @@ const mergeSlotsByDate = (slots) => {
     return acc
   }, {})
 }
+
+// 获取科室列表
+const fetchDepartmentList = async () => {
+  try {
+    const response = await getDepartmentList();
+    // console.log('科室列表', response.data);
+    if (response.data.code === 1) {
+      departmentList.value = response.data.data.records;
+      //console.log('科室列表加载成功', departmentList.value);
+    } else {
+      ElMessage.error(response.data.msg || '获取部门列表失败');
+    }
+  } catch (error) {
+    ElMessage.error('请求出错，请稍后重试');
+  }
+};
+
 // 搜索科室
 const search = async () => {
   try {
-    if (!department.value) return ElMessage.warning('请选择科室')
-
+    if (!department.value) return ElMessage.warning('请选择科室');
     // 假设接口需要departmentId参数，这里需要根据实际API调整
-    const res = await getDoctorListServe({ departmentId: department.value })
+    const res = await getDoctorListServe({ departmentId: department.value });
+    console.log('搜索结果:', res);
     if (res.code === 200) {
       doctorList.value = res.data.records.map(doctor => ({
         ...doctor,
         appointments: mergeSlotsByDate(doctor.appointmentslots)
-      }))
-      ElMessage.success('搜索成功')
+      }));
+      // 收集 departmentName 到一个数组中
+      const departmentNames = res.data.records.map(item => item.departmentName);
+      console.log('收集到的科室名称数组:', departmentNames);
+      ElMessage.success('搜索成功');
     }
   } catch (error) {
-    console.error('搜索失败', error)
-    ElMessage.error('搜索失败，请检查网络')
+    console.error('搜索失败', error);
+    ElMessage.error('搜索失败，请检查网络');
   }
-}
+};
+
+
+
 </script>
 
 <template>

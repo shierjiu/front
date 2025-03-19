@@ -103,6 +103,31 @@ export const getUserInfo = (userId) => {
   return request.get(`/user/${userId}`)
 }
 
+// 更新用户信息
+export const changeInfoUser = ({
+  userId,
+  username,
+  password,
+  name,
+  gender,
+  age,
+  phone,
+  birthDate,
+  createdDate
+}) => {
+  return request.put('/user/changeInfoUser', {
+    userId,
+    username,
+    password,
+    name,
+    gender,
+    age,
+    phone,
+    birthDate,
+    createdDate
+  })
+}
+
 // 医生开始就诊患者
 export const doctorStartDiagnoseServe = (contractAddress) =>
   request.get('/doctor/purchaseUser', { contractAddress })
@@ -118,4 +143,9 @@ export const updateAppointmentSlot = ({ slotId, session, remainingCount }) => {
 // 医生查看患者
 export const getConsultation = (params) => {
   return request.get('/consultation', { params })
+}
+
+// 获取部门列表接口
+export const getDepartmentList = () => {
+  return request.get('/department/departmentList')
 }

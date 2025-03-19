@@ -58,7 +58,8 @@ const rules = {
 // 角色列表
 const roleList = [
   { value: 'user', label: '患者' },
-  { value: 'doctor', label: '医生' }
+  { value: 'doctor', label: '医生' },
+  { value: 'admin', label: '管理员' }
 ]
 
 const formL = ref()
