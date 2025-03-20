@@ -118,7 +118,6 @@ onMounted(() => {
     justify-content: space-between;
     align-items: center;
     flex-wrap: nowrap;
-    /* 关键修复：禁止换行 */
     margin-bottom: 16px;
     padding: 12px;
     background-color: #f9f9f9;
@@ -131,9 +130,8 @@ onMounted(() => {
     align-items: center;
     gap: 16px;
     min-width: 600px;
-    /* 限制最小宽度防止挤压 */
     flex-shrink: 0;
-    /* 禁止表单被压缩 */
+
 }
 
 .form-group {
