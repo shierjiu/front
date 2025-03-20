@@ -34,6 +34,29 @@ const router = createRouter({
           component: () => import('@/views/doctor/PatientSee.vue') // 修正子路由导入语法
         }
       ]
+    },
+    {
+      path: '/admin',
+      redirect: '/admin/viewdoctor',
+      component: () => import('@/views/admin/indexV.vue'),
+      children: [
+        {
+          path: '/admin/viewdoctor',
+          component: () => import('@/views/admin/ViewDoctor.vue')
+        },
+        {
+          path: '/admin/viewpatient',
+          component: () => import('@/views/admin/ViewPatient.vue')
+        },
+        {
+          path: '/admin/viewappointment',
+          component: () => import('@/views/admin/ViewAppointment.vue')
+        },
+        {
+          path: '/admin/viewmedicalrecord',
+          component: () => import('@/views/admin/ViewMedicalRecord.vue')
+        }
+      ]
     }
   ]
 })

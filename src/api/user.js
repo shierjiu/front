@@ -169,3 +169,17 @@ export const getAppointmentSlotInfo = () => {
 export const getDepartmentList = () => {
   return request.get('/department/departmentList')
 }
+
+//管理员查询患者
+export const getUserList = (params = {}) => {
+  return request.get('/admin/userList', {
+    params: {
+      page: params.page || '',
+      pageSize: params.pageSize || '',
+      startDate: params.startDate || '',
+      endDate: params.endDate || '',
+      name: params.name || '',
+      gender: params.gender || ''
+    }
+  })
+}
