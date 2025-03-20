@@ -100,6 +100,10 @@ onMounted(() => {
 </script>
 
 <style scoped>
+::v-deep .el-table .cell {
+    text-align: center;
+}
+
 .user-list-container {
     padding: 16px;
     background-color: #fff;

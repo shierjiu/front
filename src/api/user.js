@@ -183,3 +183,29 @@ export const getUserList = (params = {}) => {
     }
   })
 }
+
+//管理员查询医生
+export const getDoctorList = (params = {}) => {
+  return request.get('/admin/doctorList', {
+    params: {
+      page: params.page || 1, // 页码，默认1
+      pageSize: params.pageSize || 10, // 每页数量，默认10
+      name: params.name || '', // 医生姓名（可选搜索）
+      departmentId: params.departmentId || '' // 科室ID（可选过滤）
+    }
+  })
+}
+
+//管理员查询预约
+export const adminGetAppointmentList = (params = {}) => {
+  return request.get('/admin/appointmentList', {
+    params: {
+      page: params.page || 1,
+      pageSize: params.pageSize || 10,
+      userName: params.userName || '',
+      status: params.status || '',
+      startDate: params.startDate || '',
+      endDate: params.endDate || ''
+    }
+  })
+}
