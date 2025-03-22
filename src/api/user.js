@@ -143,9 +143,10 @@ export const getAppointmentSlotListByDeptName = (departmentName) => {
   })
 }
 
-// 医生开始就诊患者
-export const doctorStartDiagnoseServe = (contractAddress) =>
-  request.get('/doctor/purchaseUser', { contractAddress })
+//医生 保存就诊信息接口
+export const saveConsultationServe = (params) => {
+  return request.post('/consultation', params)
+}
 
 // 医生更新就诊
 export const updateAppointmentSlot = ({ slotId, session, remainingCount }) => {
@@ -209,3 +210,6 @@ export const adminGetAppointmentList = (params = {}) => {
     }
   })
 }
+
+//admin查看科室
+export const findGetDepartmentServe = (id) => request.get(`/department/${id}`)
