@@ -142,6 +142,14 @@ export const getAppointmentSlotListByDeptName = (departmentName) => {
     params: { departmentName } // 参数是一个字符串
   })
 }
+//患者病历查询
+export const getConsultationRecordListServe = (token) => {
+  return request.get('/user/ConsultationRecordList', {
+    headers: {
+      token
+    }
+  })
+}
 
 //医生 保存就诊信息接口
 export const saveConsultationServe = (params) => {
@@ -197,6 +205,21 @@ export const getDoctorList = (params = {}) => {
   })
 }
 
+//admin更新医生
+export const updateDoctorInfoServe = (params) => {
+  return request.put('/admin/doctorInfo', params)
+}
+
+//admin添加医生
+export const addDoctorServe = (params) => {
+  return request.post('/admin/addDoctor', params)
+}
+
+//admin删除医生
+export const deleteDoctorInfoServe = (doctorId) => {
+  return request.delete(`/admin/doctorInfo/${doctorId}`)
+}
+
 //管理员查询预约
 export const adminGetAppointmentList = (params = {}) => {
   return request.get('/admin/appointmentList', {
@@ -213,3 +236,33 @@ export const adminGetAppointmentList = (params = {}) => {
 
 //admin查看科室
 export const findGetDepartmentServe = (id) => request.get(`/department/${id}`)
+
+// 管理员查询治疗记录
+export const getTreatmentListServe = (params = {}) => {
+  return request.get('/admin/treatmentList', {
+    params: {
+      page: params.page || '',
+      pageSize: params.pageSize || '',
+      doctorName: params.doctorName || '',
+      userName: params.userName || '',
+      startDate: params.startDate || '',
+      endDate: params.endDate || ''
+    }
+  })
+}
+
+//admin更新科室
+// 更新科室接口
+export const updateDepartmentServe = (params) => {
+  return request.put('/department', params)
+}
+//admin添加科室
+// 添加科室接口
+export const addDepartmentServe = (params) => {
+  return request.post('/department', params)
+}
+
+// 删除科室接口
+export const deleteDepartmentServe = (id) => {
+  return request.delete(`/department/${id}`)
+}

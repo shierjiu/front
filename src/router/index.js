@@ -12,7 +12,7 @@ const router = createRouter({
       children: [
         { path: '/user/getnum', component: () => import('@/views/user/GetNumber.vue') },
         { path: '/user/appointment', component: () => import('@/views/user/MyAppointment.vue') },
-        { path: '/user/case', component: () => import('@/views/user/MyCase.vue') },
+        { path: '/user/mycase', component: () => import('@/views/user/MyCase.vue') },
         { path: '/user/my-test', component: () => import('@/views/user/myTest.vue') }, // 新增子路由
         {
           path: '/user/personalinformation',
