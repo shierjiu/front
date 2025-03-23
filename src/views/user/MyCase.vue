@@ -19,13 +19,13 @@ import { ref } from 'vue';
 import { getConsultationRecordListServe } from '@/api/user';
 
 // 假设从本地存储获取 token，实际项目中按需调整
-const token = localStorage.getItem('userToken') || ''; 
+const token = localStorage.getItem('userToken') || '';
 const consultationRecords = ref([]);
 
 const fetchConsultationRecords = async () => {
   try {
     const res = await getConsultationRecordListServe(token);
-    if (res.code === 1) {
+    if (res.status === 200) {
       consultationRecords.value = res.data.data.records;
     } else {
       console.error('获取就诊记录失败', res.msg);

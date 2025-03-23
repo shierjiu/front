@@ -71,7 +71,7 @@ const fetchConsultation = async () => {
 const submitConsultation = async () => {
     try {
         const res = await saveConsultationServe(consultationForm.value);
-        if (res.code === 1) {
+        if (res.data.code === 1) {
             console.log(res.data); // 输出成功提示
             isDialogOpen.value = false; // 关闭对话框
             consultationForm.value = {

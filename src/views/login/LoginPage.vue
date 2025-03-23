@@ -84,6 +84,7 @@ const register = async () => {
         ElMessage.success('登录成功！');
       } else {
         ElMessage.error(loginRes.msg || '自动登录失败，请手动登录');
+        router.push(`/login`);
       }
       dialogR.value = false;
     } else {
@@ -103,18 +104,19 @@ const login = async () => {
       role: formModel.value.role
     });
     console.log('登录请求返回:', res); // 添加调试信息
-    if (res.status === 200) { // 假设返回码 200 表示成功
+    if (res.data.data != null) { // 假设返回码 200 表示成功
       const token = res.data.data;
       localStorage.setItem('token', token);
       // 新增日志：检查跳转路径、token存储、路由实例
       router.push(`/${formModel.value.role}`);
       ElMessage.success('登录成功！');
       // 临时固定跳转到 /user 测试
-      // console.log('登录成功，跳转到 /user 页面');
+      //console.log('登录成功，跳转到 /user 页面');
       // router.push('/user');
       // ElMessage.success('登录成功！');
     } else {
       ElMessage.error(res.msg || '登录失败，请稍后重试');
+      router.push(`/login`);
     }
   } catch (error) {
     console.error('登录请求出错:', error);
