@@ -58,6 +58,10 @@ onMounted(() => {
 </script>
 
 <style scoped>
+::v-deep .el-table .cell {
+    text-align: center;
+}
+
 .treatment-list-card {
     padding: 20px;
     border-radius: 8px;

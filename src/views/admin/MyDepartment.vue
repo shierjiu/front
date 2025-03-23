@@ -157,5 +157,7 @@ onMounted(() => {
 </script>
 
 <style scoped>
-/* 可根据需求添加样式 */
+::v-deep .el-table .cell {
+    text-align: center;
+}
 </style>

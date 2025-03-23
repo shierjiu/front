@@ -3,7 +3,8 @@
         <!-- 搜索框 -->
         <div class="search-container">
             <el-input v-model="searchParams.name" placeholder="请输入医生姓名" @keyup.enter="fetchDoctorList"></el-input>
-            <el-input v-model="searchParams.department" placeholder="请输入科室名称" @keyup.enter="fetchDoctorList"></el-input>
+            <el-input v-model="searchParams.departmentId" placeholder="请输入科室名称"
+                @keyup.enter="fetchDoctorList"></el-input>
             <el-button type="primary" @click="fetchDoctorList">搜索</el-button>
             <!-- 添加医生按钮 -->
             <el-button type="success" @click="openAddDoctorDialog">添加医生</el-button>
@@ -92,7 +93,7 @@ const searchParams = ref({
     page: 1,
     pageSize: 10,
     name: '',
-    department: ''
+    departmentId: ''
 });
 
 // 医生列表数据

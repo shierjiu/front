@@ -112,6 +112,10 @@ onMounted(() => {
 </script>
 
 <style scoped>
+::v-deep .el-table .cell {
+    text-align: center;
+}
+
 .appointment-list {
     padding: 20px;
 }
