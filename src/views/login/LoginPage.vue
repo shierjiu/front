@@ -2,7 +2,7 @@
 import { ref, onMounted, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import { registerServe, loginServe } from '@/api/user'
-import { ElMessage } from 'element-plus';
+import { ElMessage, ElMessageBox } from 'element-plus';
 const router = useRouter()
 
 // 获取科室列表
@@ -103,7 +103,7 @@ const login = async () => {
       password: formModel.value.password,
       role: formModel.value.role
     });
-    console.log('登录请求返回:', res); // 添加调试信息
+    //console.log('登录请求返回:', res); // 添加调试信息
     if (res.data.data != null) { // 假设返回码 200 表示成功
       const token = res.data.data;
       localStorage.setItem('token', token);
@@ -117,6 +117,10 @@ const login = async () => {
     } else {
       ElMessage.error(res.msg || '登录失败，请稍后重试');
       router.push(`/login`);
+      ElMessageBox.alert('账号密码错误', '登录失败', {
+        confirmButtonText: '确定',
+        type: 'error'
+      });
     }
   } catch (error) {
     console.error('登录请求出错:', error);
