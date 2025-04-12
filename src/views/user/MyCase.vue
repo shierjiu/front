@@ -6,7 +6,7 @@
         <el-table-column prop="recordId" label="记录 ID" align="center"></el-table-column>
         <el-table-column prop="doctorName" label="医生姓名" align="center"></el-table-column>
         <el-table-column prop="consultationDate" label="就诊日期" align="center"></el-table-column>
-        <el-table-column prop="currentIlliness" label="当前病情" align="center"></el-table-column>
+        <el-table-column prop="currentIllness" label="当前病情" align="center"></el-table-column>
         <el-table-column prop="diagnosis" label="诊断结果" align="center"></el-table-column>
         <el-table-column prop="treatmentPlan" label="治疗方案" align="center"></el-table-column>
       </el-table>

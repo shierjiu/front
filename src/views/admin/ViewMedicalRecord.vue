@@ -6,7 +6,7 @@
             <div class="search-form">
                 <input v-model="filters.userName" placeholder="用户名" />
                 <el-select v-model="filters.status" placeholder="请选择状态" style="width: 150px;">
-                    <el-option label="已预约" :value="3"></el-option>
+                    <el-option label="已预约" :value="0"></el-option>
                     <el-option label="已取消" :value="1"></el-option>
                     <el-option label="已完成" :value="2"></el-option>
                 </el-select>

@@ -93,8 +93,15 @@ export const registrationServe = ({
 export const getCaseServe = () => request.get('/user/userInfo')
 
 // 患者获取我的预约
-export const addAppointment = (slotId) => {
-  return request.post('/appointment', { slotId })
+export const addAppointment = (slotId, age, gender, allergies, symptoms) => {
+  const data = {
+    slotId,
+    age,
+    gender,
+    allergies,
+    symptoms
+  }
+  return request.post('/appointment', data)
 }
 
 // 患者获取我的预约
@@ -168,7 +175,10 @@ export const updateAppointmentSlot = ({ slotId, session, remainingCount }) => {
 export const getConsultation = (params) => {
   return request.get('/consultation', { params })
 }
-
+//查看详细信息
+export const getDetailedConsultation = (id) => {
+  return request.get(`/consultation/basis/${id}`)
+}
 // 获取预约时段信息接口
 export const getAppointmentSlotInfo = () => {
   return request.get('/appointmentSlot')

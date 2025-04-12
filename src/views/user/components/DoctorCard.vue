@@ -1,7 +1,47 @@
+<template>
+  <!-- 当剩余数量 > 0 时才显示卡片 -->
+  <div v-if="doctorInfo.remainingCount > 0" class="doctor-card">
+    <img :src="doctorInfo.photoUrl" alt="医生照片" />
+    <div class="doctor-info">
+      <p>医生：{{ doctorInfo.name }}</p>
+      <p>所属科室：{{ doctorInfo.departmentName }}</p>
+      <!-- 父组件里叫 date -->
+      <p>日期：{{ doctorInfo.date }}</p>
+      <!-- 父组件里已是 session -->
+      <p>{{ doctorInfo.session }}</p>
+    </div>
+    <span>剩余数量：{{ doctorInfo.remainingCount }}</span>
+    <el-button :disabled="appointmented" @click="handleClick" type="primary">
+      {{ appointmented ? '已预约' : '预约挂号' }}
+    </el-button>
+    <!-- 弹出框 -->
+    <el-dialog v-model="dialogVisible" title="输入预约参数">
+      <el-form :model="{}">
+        <el-form-item label="年龄">
+          <el-input v-model="age" placeholder="请输入年龄"></el-input>
+        </el-form-item>
+        <el-form-item label="性别">
+          <el-input v-model="gender" placeholder="请输入性别"></el-input>
+        </el-form-item>
+        <el-form-item label="过敏情况">
+          <el-input v-model="allergies" placeholder="请输入过敏情况"></el-input>
+        </el-form-item>
+        <el-form-item label="症状">
+          <el-input v-model="symptoms" placeholder="请输入症状"></el-input>
+        </el-form-item>
+      </el-form>
+      <template #footer>
+        <el-button @click="dialogVisible = false">取 消</el-button>
+        <el-button type="primary" @click="handleConfirm">确 定</el-button>
+      </template>
+    </el-dialog>
+  </div>
+</template>
+
 <script setup>
 import { defineProps, ref, defineEmits } from 'vue'
 import { addAppointment } from '@/api/user'
-import { ElMessage } from 'element-plus'
+import { ElMessage, ElMessageBox } from 'element-plus'
 
 const props = defineProps({
   doctorInfo: {
@@ -15,6 +55,15 @@ const slotId = ref(props.doctorInfo.slotId || '')
 // 是否已预约
 console.log('props.doctorInfo', props.doctorInfo);
 const appointmented = ref(false)
+
+// 定义弹出框的显示状态
+const dialogVisible = ref(false)
+// 定义参数相关的 ref
+const age = ref('')
+const gender = ref('')
+const allergies = ref('')
+const symptoms = ref('')
+
 
 const handleAddAppointment = async () => {
   //console.log('点击触发，slotId:', slotId.value, 'appointed:', appointmented.value);
@@ -35,28 +84,41 @@ const handleAddAppointment = async () => {
     ElMessage.error('请求出错，请检查网络或联系管理员');
   }
 };
+
+// 处理弹出框的显示与隐藏
+const handleOpenDialog = () => {
+  dialogVisible.value = true
+}
+const handleConfirm = async () => {
+  try {
+    const response = await addAppointment(slotId.value, age.value, gender.value, allergies.value, symptoms.value);
+    if (response.data.code === 1) {
+      ElMessage.success('预约添加成功');
+      appointmented.value = true; // 更新预约状态
+      emit('getData'); // 通知父组件刷新数据
+      dialogVisible.value = false; // 关闭弹出框
+    } else {
+      ElMessage.error(response.data.msg || '预约添加失败');
+    }
+  } catch (error) {
+    ElMessage.error('请求出错，请检查网络或联系管理员');
+  }
+};
+
+const handleClick = () => {
+  ElMessageBox.confirm('是否需要输入额外的预约信息？', '提示', {
+    confirmButtonText: '是',
+    cancelButtonText: '否',
+    type: 'warning'
+  }).then(() => {
+    handleOpenDialog()
+  }).catch(() => {
+    handleAddAppointment()
+  })
+}
+
+
 </script>
-
-<template>
-  <!-- 当剩余数量 > 0 时才显示卡片 -->
-  <div v-if="doctorInfo.remainingCount > 0" class="doctor-card">
-    <img :src="doctorInfo.photoUrl" alt="医生照片" />
-    <div class="doctor-info">
-      <p>医生：{{ doctorInfo.name }}</p>
-      <p>所属科室：{{ doctorInfo.departmentName }}</p>
-      <!-- 父组件里叫 date -->
-      <p>日期：{{ doctorInfo.date }}</p>
-      <!-- 父组件里已是 session -->
-      <p>{{ doctorInfo.session }}</p>
-    </div>
-    <span>剩余数量：{{ doctorInfo.remainingCount }}</span>
-    <el-button :disabled="appointmented" @click="handleAddAppointment" type="primary">
-      {{ appointmented ? '已预约' : '预约挂号' }}
-    </el-button>
-  </div>
-
-</template>
-
 
 <style scoped>
 /* 父容器（存放所有卡片） */
