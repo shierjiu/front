@@ -46,10 +46,16 @@
                     <el-input v-model="consultationForm.pastHistory"></el-input>
                 </el-form-item>
                 <el-form-item label="诊断结果">
-                    <el-input v-model="consultationForm.diagnosis"></el-input>
+                    <el-select v-model="consultationForm.diagnosis" filterable placeholder="请选择或输入诊断结果">
+                        <el-option v-for="(item, index) in diagnosisOptions" :key="index" :label="item"
+                            :value="item"></el-option>
+                    </el-select>
                 </el-form-item>
                 <el-form-item label="治疗方案">
-                    <el-input v-model="consultationForm.treatmentPlan"></el-input>
+                    <el-select v-model="consultationForm.treatmentPlan" filterable placeholder="请选择或输入治疗方案">
+                        <el-option v-for="(item, index) in treatmentOptions" :key="index" :label="item"
+                            :value="item"></el-option>
+                    </el-select>
                 </el-form-item>
             </el-form>
             <template #footer>
@@ -75,11 +81,10 @@
 
 <script setup>
 import { ref, onMounted } from 'vue';
-import { getConsultation, saveConsultationServe, getDetailedConsultation } from '@/api/user';
+import { getConsultation, saveConsultationServe, getDetailedConsultation, getCurrentIllnessWithTreatmentPlanServe } from '@/api/user';
 import { ElMessage } from 'element-plus';
 
 const consultationList = ref([]);
-// 初始化 response 对象
 const response = ref({ data: {} });
 
 const isDialogOpen = ref(false);
@@ -91,10 +96,28 @@ const consultationForm = ref({
     treatmentPlan: ''
 });
 
-// 新增：控制详细信息对话框显示/隐藏
 const isDetailDialogOpen = ref(false);
-// 新增：存储详细信息
 const detailInfo = ref({});
+
+// 诊断结果选项
+const diagnosisOptions = ref([]);
+// 治疗方案选项
+const treatmentOptions = ref([]);
+
+const fetchDiagnosisAndTreatment = async () => {
+    try {
+        const res = await getCurrentIllnessWithTreatmentPlanServe();
+        if (res.data.code === 1) {
+            // 从 currentIllnessList 提取诊断相关内容
+            diagnosisOptions.value = res.data.data.currentIllnessList.map(item => item.currentIllness);
+            // 从 treatmentPlanList 提取治疗方案内容
+            treatmentOptions.value = res.data.data.treatmentPlanList.map(item => item.treatmentPlan);
+        }
+    } catch (error) {
+        ElMessage.error('获取诊断/治疗选项数据失败');
+    }
+};
+
 
 const fetchConsultation = async () => {
     try {
@@ -107,6 +130,7 @@ const fetchConsultation = async () => {
         ElMessage.error('请求出错，请稍后重试');
     }
 };
+
 const submitConsultation = async () => {
     try {
         const res = await saveConsultationServe(consultationForm.value);
@@ -133,7 +157,6 @@ const handleButtonClick = () => {
     isDialogOpen.value = true; // 打开对话框
 };
 
-// 新增：获取并显示详细信息的方法
 const showDetail = async (id) => {
     try {
         const res = await getDetailedConsultation(id);
@@ -150,6 +173,7 @@ const showDetail = async (id) => {
 
 onMounted(() => {
     fetchConsultation();
+    fetchDiagnosisAndTreatment(); // 初始化时获取选项数据
 });
 </script>
 

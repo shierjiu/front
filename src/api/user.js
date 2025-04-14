@@ -63,6 +63,12 @@ export const doctorGetAppointmentListServe = ({ size, current }) => {
   return request.get(url)
 }
 
+//医生获得治疗方案
+export const getCurrentIllnessWithTreatmentPlanServe = () => {
+  let url = '/consultation/CurrentIllnessWithTreatmentPlan'
+  return request.get(url)
+}
+
 // 获取医生列表
 export const getDoctorListServe = () => request.get('/appointmentSlot/appointmentslotList')
 
@@ -275,4 +281,31 @@ export const addDepartmentServe = (params) => {
 // 删除科室接口
 export const deleteDepartmentServe = (id) => {
   return request.delete(`/department/${id}`)
+}
+
+// 修改治疗方案
+export const updateTreatmentPlanServe = (params) => {
+  return request.put('/admin/updateTreatmentPlan', params)
+}
+// 修改病情方案
+export const medicalConditionDescription = (params) => {
+  return request.put('/admin/updateCurrentIllness', params)
+}
+
+//添加治疗方案
+export const saveTreatmentPlanServe = (data) => {
+  return request.post('/admin/saveTreatmentPlan', data)
+}
+//添加病情方案
+export const saveCurrentIllnessServe = (data) => {
+  return request.post('/admin/saveCurrentIllness', data)
+}
+
+// 删除治疗方案
+export const removeTreatmentPlanServe = (id) => {
+  return request.delete(`/admin/removeTreat/${id}`)
+}
+// 删除病情方案
+export const removeCurrentIllnessServe = (id) => {
+  return request.delete(`/admin/removeCurrent/${id}`)
 }

@@ -12,6 +12,7 @@
                     <el-menu-item index="/admin/viewappointment">查看问诊</el-menu-item>
                     <el-menu-item index="/admin/viewmedicalrecord">查看预约</el-menu-item>
                     <el-menu-item index="/admin/mydepartment.vue">查看科室</el-menu-item>
+                    <el-menu-item index="/admin/treatmentdescription.vue">诊疗方案病情描述</el-menu-item>
                 </el-menu>
             </el-aside>
             <el-main>
