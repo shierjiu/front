@@ -46,13 +46,14 @@
                     <el-input v-model="consultationForm.pastHistory"></el-input>
                 </el-form-item>
                 <el-form-item label="诊断结果">
-                    <el-select v-model="consultationForm.diagnosis" filterable placeholder="请选择或输入诊断结果">
+                    <el-select v-model="consultationForm.diagnosis" filterable placeholder="请选择或输入诊断结果" allow-create>
                         <el-option v-for="(item, index) in diagnosisOptions" :key="index" :label="item"
                             :value="item"></el-option>
                     </el-select>
                 </el-form-item>
                 <el-form-item label="治疗方案">
-                    <el-select v-model="consultationForm.treatmentPlan" filterable placeholder="请选择或输入治疗方案">
+                    <el-select v-model="consultationForm.treatmentPlan" filterable placeholder="请选择或输入治疗方案"
+                        allow-create>
                         <el-option v-for="(item, index) in treatmentOptions" :key="index" :label="item"
                             :value="item"></el-option>
                     </el-select>
