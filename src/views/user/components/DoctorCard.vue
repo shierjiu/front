@@ -1,7 +1,7 @@
 <template>
   <!-- 当剩余数量 > 0 时才显示卡片 -->
   <div v-if="doctorInfo.remainingCount > 0" class="doctor-card">
-    <img :src="doctorInfo.photoUrl" alt="医生照片" />
+    <img :src="imgSrc" alt="医生照片" />
     <div class="doctor-info">
       <p>医生：{{ doctorInfo.name }}</p>
       <p>所属科室：{{ doctorInfo.departmentName }}</p>
@@ -39,9 +39,10 @@
 </template>
 
 <script setup>
-import { defineProps, ref, defineEmits } from 'vue'
+import { defineProps, ref, defineEmits, computed } from 'vue'
 import { addAppointment } from '@/api/user'
 import { ElMessage, ElMessageBox } from 'element-plus'
+import defaultPic from '@/assets/doctor.jpg'
 
 const props = defineProps({
   doctorInfo: {
@@ -52,6 +53,9 @@ const props = defineProps({
 
 const emit = defineEmits(['getData'])
 const slotId = ref(props.doctorInfo.slotId || '')
+const imgSrc = computed(() => {
+  return props.doctorInfo.photoUrl || defaultPic
+})
 // 是否已预约
 console.log('props.doctorInfo', props.doctorInfo);
 const appointmented = ref(false)
@@ -117,10 +121,17 @@ const handleClick = () => {
   })
 }
 
-
 </script>
 
 <style scoped>
+.doctor-card img {
+  display: block;
+  width: 100%;
+  height: auto;
+  object-fit: cover;
+  margin-bottom: 10px;
+}
+
 /* 父容器（存放所有卡片） */
 .doctor {
   display: flex;

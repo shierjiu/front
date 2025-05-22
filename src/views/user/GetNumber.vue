@@ -3,7 +3,7 @@ import { ref, onMounted } from 'vue'
 import DoctorCard from './components/DoctorCard.vue'
 import { getDoctorListServe, getDepartmentList, getAppointmentSlotListByDeptName } from '@/api/user'
 import { ElMessage } from 'element-plus';
-
+import defaultPic from '@/assets/doctor.jpg'
 // 获取医生列表
 onMounted(async () => {
   await Promise.all([
@@ -58,7 +58,7 @@ const search = async () => {
           session: firstSlot.session,
           remainingCount: firstSlot.remainingCount,
           // 这里仅示例，如需医生照片，请改成真实路径或后端返回的 URL
-          photoUrl: '@/assets/doctor.jpg',
+          photoUrl: defaultPic,
           slotId: firstSlot.slotId
         }
       })
