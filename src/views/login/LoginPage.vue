@@ -3,6 +3,7 @@ import { ref, onMounted, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import { registerServe, loginServe } from '@/api/user'
 import { ElMessage, ElMessageBox } from 'element-plus';
+import 'element-plus/dist/index.css';
 const router = useRouter()
 
 // 获取科室列表
